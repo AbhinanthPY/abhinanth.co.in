@@ -3,3 +3,81 @@
 .activity-toggle { font-size: 20px; font-weight: 400; }
 .search-box > button { font-size: 23px; min-width: 32px; }
 .enquiry-review [data-review="message"] { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.site-sound {
+  position: fixed;
+  z-index: 151;
+  inset-inline-end: max(16px, env(safe-area-inset-right));
+  inset-block-end: max(16px, env(safe-area-inset-bottom));
+  display: grid;
+  place-items: center;
+  inline-size: 48px;
+  block-size: 48px;
+  padding: 0;
+  border: 1px solid rgba(249, 247, 238, .65);
+  border-radius: 50%;
+  background: rgba(245, 244, 235, .88);
+  color: #163e32;
+  box-shadow: 0 3px 16px rgba(15, 46, 36, .18);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: background-color .22s ease, box-shadow .22s ease;
+  animation: site-sound-enter .5s ease-out, site-sound-pulse .65s 3.35s ease-out;
+}
+
+.site-sound:focus-visible {
+  outline: 2px solid #163e32;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px #f5f4eb;
+}
+
+@media (hover: hover) {
+  .site-sound:hover { background-color: #fffdf5; }
+}
+
+.site-sound svg { inline-size: 23px; block-size: 23px; }
+.site-sound-label,
+.site-sound-wave,
+.site-sound[data-state="playing"] .site-sound-cross { display: none; }
+
+.site-sound[data-state="blocked"] .site-sound-label {
+  position: absolute;
+  inset-inline-end: calc(100% + 8px);
+  display: block;
+  border: 1px solid rgba(249, 247, 238, .65);
+  border-radius: 999px;
+  padding: 6px 11px;
+  background: #f5f4eb;
+  box-shadow: 0 3px 16px rgba(15, 46, 36, .18);
+  font-size: .75rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.site-sound[data-state="playing"] .site-sound-wave {
+  display: inline;
+  animation: site-sound-wave 1.8s ease-in-out infinite;
+}
+
+.site-sound .site-sound-wave:nth-of-type(3) { animation-delay: -.25s; }
+.site-sound .site-sound-wave:nth-of-type(4) { animation-delay: -.5s; }
+
+@keyframes site-sound-enter {
+  from { opacity: .65; transform: scale(.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes site-sound-pulse {
+  45% { transform: scale(1.07); }
+}
+
+@keyframes site-sound-wave {
+  0%, 100% { opacity: .5; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-sound,
+  .site-sound[data-state="playing"] .site-sound-wave { animation: none; transition: none; }
+}

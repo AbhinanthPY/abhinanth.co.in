@@ -2,6 +2,10 @@
    All page content is delivered in HTML. No data leaves the enquiry form. */
 (() => {
   'use strict';
+  const soundScript = document.createElement('script');
+  soundScript.src = new URL('ambient-audio.js', document.currentScript.src).href;
+  document.head.append(soundScript);
+
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
   // Plain relative HTML links work on a custom domain and GitHub Pages.
