@@ -1,0 +1,122 @@
+/* About chapter 03 */
+.ab-directors {
+  background: var(--ab-ivory);
+  padding-block: clamp(62px, 8vw, 132px);
+}
+.ab-directors-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: clamp(28px, 4vw, 64px);
+}
+.surabhi-about .ab-directors-head h2 {
+  font-size: clamp(42px, 5.55vw, 98px);
+}
+.ab-directors-controls:not([hidden]) { display: flex; align-items: center; gap: 9px; flex: none; }
+.ab-directors-controls button {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid var(--ab-line);
+  border-radius: 50%;
+  color: var(--ab-ink);
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease;
+}
+.ab-directors-controls button:hover:not([aria-disabled="true"]) { background: var(--ab-green); color: var(--ab-ivory); }
+.ab-directors-controls button[aria-disabled="true"] { opacity: .4; cursor: default; }
+.ab-directors-counter {
+  min-width: 56px;
+  text-align: center;
+  font-size: .74rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .07em;
+}
+.ab-directors-body {
+  display: grid;
+  grid-template-columns: clamp(112px, 12vw, 185px) minmax(0, 1fr);
+  gap: clamp(14px, 2vw, 34px);
+}
+.surabhi-about .ab-directors-category {
+  align-self: start;
+  width: fit-content;
+  padding: 9px 15px;
+  border-radius: 999px;
+  background: var(--ab-green);
+  color: var(--ab-ivory);
+  font-size: .75rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.ab-directors-track {
+  --director-gap: clamp(10px, 1.25vw, 20px);
+  --director-start-fade: #000;
+  --director-end-fade: #000;
+  position: relative;
+  display: flex;
+  gap: var(--director-gap);
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  margin: 0;
+  padding: 0 0 8px;
+  list-style: none;
+  mask-image: linear-gradient(to right, var(--director-start-fade), #000 12px, #000 calc(100% - 12px), var(--director-end-fade));
+}
+.ab-directors-track.can-go-back { --director-start-fade: #0008; }
+.ab-directors-track.can-go-next { --director-end-fade: #0008; }
+.surabhi-about .ab-directors-track:focus-visible { mask-image: none; outline-offset: -2px; }
+.ab-directors-track.is-dragging { scroll-snap-type: none; cursor: grabbing; user-select: none; }
+.ab-director {
+  flex: 0 0 calc((100% - 4 * var(--director-gap)) / 4.18);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+.ab-director figure { margin: 0; }
+.ab-director-photo {
+  aspect-ratio: 4 / 5.35;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--ab-green);
+}
+.ab-director-photo-white { background: #fff; }
+.ab-director-photo img { object-position: 50% 34%; }
+.ab-director figcaption {
+  padding-top: 10px;
+  color: var(--ab-ink);
+  font-size: clamp(.85rem, 1.13vw, 1.08rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+.ab-director-role {
+  display: block;
+  margin-top: 4px;
+  color: var(--ab-muted);
+  font-size: .78rem;
+  font-weight: 500;
+}
+@media (max-width: 1199px) {
+  .ab-director { flex-basis: calc((100% - 3 * var(--director-gap)) / 3.18); }
+}
+@media (max-width: 1024px) {
+  .ab-director { flex-basis: calc((100% - 2 * var(--director-gap)) / 2.55); }
+}
+@media (max-width: 767px) {
+  .ab-directors-head { align-items: start; flex-direction: column; gap: 16px; margin-bottom: 18px; }
+  .ab-directors-body { grid-template-columns: minmax(0, 1fr); }
+  .ab-director { flex-basis: 84%; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ab-directors.is-entering .ab-director:nth-child(-n+5) {
+    animation: ab-director-enter .55s both ease-out;
+    animation-delay: calc(var(--director-order) * 50ms);
+  }
+  @keyframes ab-director-enter {
+    from { opacity: .58; transform: translateY(11px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}

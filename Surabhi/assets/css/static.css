@@ -1,0 +1,5 @@
+/* Native hidden remains authoritative inside grid/flex layouts. */
+[hidden] { display: none !important; }
+.activity-toggle { font-size: 20px; font-weight: 400; }
+.search-box > button { font-size: 23px; min-width: 32px; }
+.enquiry-review [data-review="message"] { white-space: pre-wrap; overflow-wrap: anywhere; }
