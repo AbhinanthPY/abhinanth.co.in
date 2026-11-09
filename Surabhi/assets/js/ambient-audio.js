@@ -30,8 +30,8 @@
   }
 
   // Both encodes already play at 15% of the original level, including on iOS.
-  audio.volume = 0;
-  const canFade = audio.volume === 0;
+  audio.volume = 0.5;
+  const canFade = audio.volume === 0.5;
   audio.volume = 1;
 
   let muted = false;
@@ -149,11 +149,26 @@
     if (!muted && (playing || requestMode === 'interactive' || !audio.paused && !requestMode)) stop();
     else start(true);
   });
-  document.addEventListener('click', (event) => {
+  function retryAutoplay(event) {
     if (!event.isTrusted || !active || muted || playing || requestMode === 'interactive' ||
       control.contains(event.target)) return;
     if (blocked || requestMode === 'automatic') start(true);
+  }
+
+  // Retry on the browser's activation event before a link or button handles it.
+  document.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'mouse' && event.isPrimary && event.button === 0) retryAutoplay(event);
   }, { capture: true });
+  document.addEventListener('pointerup', (event) => {
+    if (event.pointerType !== 'mouse' && event.isPrimary && event.button === 0) retryAutoplay(event);
+  }, { capture: true });
+  document.addEventListener('keydown', (event) => {
+    if (!event.repeat && (event.key === 'Enter' || event.key === ' ') &&
+      event.target instanceof Element && event.target.closest('a[href], button, summary, [role="button"]')) {
+      retryAutoplay(event);
+    }
+  }, { capture: true });
+  document.addEventListener('click', retryAutoplay, { capture: true });
 
   addEventListener('pagehide', () => {
     active = false;
