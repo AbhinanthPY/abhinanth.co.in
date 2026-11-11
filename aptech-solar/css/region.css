@@ -1,0 +1,24 @@
+/*.footnote-supglyph .diamond {
+	text-decoration: none;
+	font-size: 10px;
+	position: relative;
+	top: -7px;
+	color: #1d1d1f;
+	font-weight: bolder;
+}
+.footnote-supglyph .diamond:hover {
+	text-decoration: none;
+	color: #0066cc;
+}
+@media (max-width: 734px) {
+	.section-performance .subsection-personas .persona-grid .text-content {
+		max-width: 360px;
+	}
+}
+.section-welcome .marquee-header {
+	max-width: 40em;
+	min-width: 0;
+}*/
+.media-hero-wrapper .ribbon .footnote a {
+	text-underline-offset: inherit;
+}
