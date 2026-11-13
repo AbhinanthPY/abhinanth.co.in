@@ -50,6 +50,9 @@
 
 	
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="preload" as="fetch" href="./assets/videos/hero/solar-scroll-optimized.mp4" crossorigin
+  media="(prefers-reduced-motion: no-preference)" fetchpriority="high" />
+<link rel="preload" as="image" href="./assets/images/satellite-solar-cells.webp" id="solar-card-texture" />
 
 	
 	
@@ -235,9 +238,11 @@
 	<link rel="stylesheet" href="./css/region.css" type="text/css" />
 	<script src="./js/overview-head.js" type="text/javascript" charset="utf-8"></script>
 <meta name="robots" content="noindex,nofollow" />
-<link rel="stylesheet" href="./css/styles.css" />
+<link rel="stylesheet" href="./css/styles.css?v=light-ring" />
   <noscript>
     <style>
+      html:has(.solar-loader[open]) { overflow: auto; }
+      .solar-loader[open] { display: none; }
       .solar-hero[data-scroll-video] { min-height: 0; }
       .solar-hero[data-scroll-video] .solar-stage { position: relative; }
       .solar-hero[data-intro] .solar-hero-title { opacity: 1; transform: none; }
@@ -246,15 +251,26 @@
   </noscript>
 </head>
 <body class="page-overview page-overview-macbook-pro-liquid-retina-xdr-display" data-component-list="FocusManager DeepLink AutoARQL">
+  <dialog class="solar-loader" open aria-label="Loading Aptech Solar">
+    <canvas class="solar-loader__canvas" aria-hidden="true"></canvas>
+    <button class="solar-loader__progress-button" type="button" aria-label="Brighten the light ring" aria-pressed="false">
+      <span class="solar-loader__percent" aria-hidden="true">0%</span>
+    </button>
+    <div class="solar-loader__readout">
+      <p id="solar-loading-status" role="status" tabindex="-1" autofocus>Loading Aptech Solar</p>
+      <progress class="visuallyhidden" aria-label="Loading progress" value="0" max="100"></progress>
+      <button class="solar-loader__retry" type="button" hidden>Retry loading</button>
+    </div>
+  </dialog>
 	<main id="main" class="main" role="main" data-page-type="overview">
     <section class="solar-hero" id="home" aria-labelledby="solar-title" data-scroll-video data-intro>
       <div class="solar-stage">
         <img class="solar-hero-poster" src="./assets/videos/hero/solar-poster.jpg"
           width="1280" height="720" alt="" fetchpriority="high">
-        <video src="./assets/videos/hero/solar-scroll.mp4" width="1280" height="720"
+        <video src="./assets/videos/hero/solar-scroll-optimized.mp4" width="1280" height="720"
           preload="none" muted playsinline aria-label="The sun and a rooftop solar installation"></video>
         <svg class="solar-wordmark" viewBox="0 0 2172 724" aria-hidden="true" focusable="false">
-          <image href="./assets/images/aptech-wordmark.png" width="2172" height="724"/>
+          <image href="./assets/images/aptech-wordmark.webp" width="2172" height="724"/>
         </svg>
         <h1 class="solar-hero-title" id="solar-title"><span class="visuallyhidden">Aptech. </span>Make sunlight yours.</h1>
 
@@ -267,6 +283,7 @@
       </div>
       <span class="solar-hero-end" id="solar-next" aria-hidden="true"></span>
     </section>
+    <script src="./js/solar-loader.js?v=light-ring" async onerror="document.querySelector('.solar-loader').remove()"></script>
     <header class="solar-header" inert>
       <nav class="solar-nav" aria-label="Main navigation">
         <div class="solar-nav-track">
@@ -284,12 +301,12 @@
               </svg>
               <span>Home</span>
             </a></li>
-            <li><button class="solar-nav-item" type="button" aria-pressed="false">
+            <li><a class="solar-nav-item" href="#about">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <circle cx="12" cy="8" r="3.5"/><path d="M5 21v-2a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v2"/>
               </svg>
               <span>About</span>
-            </button></li>
+            </a></li>
             <li><button class="solar-nav-item" type="button" aria-pressed="false">
               <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -450,19 +467,20 @@
 							</div>
 							<div class="product-viewer-media tour-image tour-chips pin-center">
 								<picture>
-									<img src="./assets/images/aptech-solar-intelligence.png" width="1672" height="941" loading="lazy" alt="">
+									<img src="./assets/images/aptech-solar-intelligence.webp" width="1672" height="941" loading="lazy" alt="">
 								</picture>
 							</div>
 							<div class="product-viewer-media tour-image tour-safety pin-center">
 								<picture>
-									<img src="./assets/images/aptech-solar-safety.png" width="1672" height="941" loading="lazy" alt="">
+									<img src="./assets/images/aptech-solar-safety.webp" width="1672" height="941" loading="lazy" alt="">
 								</picture>
 							</div>
 							<div class="product-viewer-media tour-image tour-installation pin-center">
 								<video id="product-viewer-installation" src="./assets/videos/aptech-solar-installation.mp4"
 									data-play-once="product-viewer-display--button"
-									poster="./assets/images/aptech-solar-installation-start.jpg" data-final-frame="./assets/images/aptech-solar-installation-end.jpg"
+									data-poster="./assets/images/aptech-solar-installation-start.jpg" data-final-frame="./assets/images/aptech-solar-installation-end.jpg"
 									width="1280" height="720" preload="none" muted playsinline aria-hidden="true"></video>
+								<noscript><img src="./assets/images/aptech-solar-installation-start.jpg" width="1280" height="720" loading="lazy" alt=""></noscript>
 							</div>
 							<div class="product-viewer-media tour-image tour-support pin-center">
 								<picture>
@@ -477,8 +495,9 @@
 							<div class="product-viewer-media tour-image tour-solar-flow pin-center">
 								<video id="product-viewer-solar-flow" src="./assets/videos/aptech-solar-flow.mp4"
 									data-play-once="product-viewer-mics-speakers--button"
-									poster="./assets/images/aptech-solar-flow-video-start.jpg" data-final-frame="./assets/images/aptech-solar-flow-video-end.jpg"
+									data-poster="./assets/images/aptech-solar-flow-video-start.jpg" data-final-frame="./assets/images/aptech-solar-flow-video-end.jpg"
 									width="1280" height="720" preload="none" muted playsinline aria-hidden="true"></video>
+								<noscript><img src="./assets/images/aptech-solar-flow-video-start.jpg" width="1280" height="720" loading="lazy" alt=""></noscript>
 							</div>
 						</div>
 					</div>
@@ -1035,6 +1054,112 @@
 				</div>
 			</div>
 		</section>
+    <section class="solar-about" id="about" aria-labelledby="solar-about-title">
+      <div class="solar-about__orb" aria-hidden="true"></div>
+      <div class="solar-about__flow">
+        <div class="solar-about__opening">
+          <div class="solar-about__stage">
+            <div class="solar-about__window" aria-hidden="true">
+              <img src="./assets/images/about-solar-landscape.jpg" alt="" width="1600" height="900" loading="lazy" decoding="async">
+            </div>
+            <div class="solar-about__intro solar-about__gutter">
+              <div>
+                <span class="solar-about__tag">About Aptech</span>
+                <h2 class="solar-about__display solar-about__offset" id="solar-about-title">
+                  Sunlight.<span>Made yours.</span>
+                </h2>
+              </div>
+              <p>Aptech designs rooftop solar around the way you use power, from the first roof assessment to the day your system starts generating.</p>
+            </div>
+            <div class="solar-about__iris" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <div class="solar-about__story solar-about__gutter" id="about-story">
+          <h3 class="solar-about__display solar-about__offset" data-about-reveal>How we<span>start</span></h3>
+          <div class="solar-about__story-copy">
+            <div data-about-reveal>
+              <p>Every project starts with your roof and the way your home uses electricity. We look at space, shade and your bill to understand what a solar system could do for you.</p>
+              <p>Then we turn that assessment into a plan you can understand, from the right system size to where the panels and inverter will go.</p>
+            </div>
+            <img src="./assets/images/about-solar-planning.jpg" alt="Solar technicians studying a roof plan" width="768" height="512" loading="lazy" data-about-reveal>
+          </div>
+          <div class="solar-about__word" aria-hidden="true" data-about-reveal>APTECH</div>
+        </div>
+
+        <div class="solar-about__manifesto">
+          <div class="solar-about__stage">
+            <div class="solar-about__glass" aria-hidden="true"></div>
+            <div class="solar-about__manifesto-copy" data-about-reveal>
+              <span class="solar-about__tag">Our approach</span>
+              <p>Good solar comes down to the details. Where the panels sit, how the cables run, and what you can see once the system is on.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="solar-about__team solar-about__gutter">
+          <div class="solar-about__team-intro" data-about-reveal>
+            <span class="solar-about__tag">How we work</span>
+            <h3>Good planning on paper.<br>Careful work on the roof.</h3>
+          </div>
+          <div class="solar-about__team-grid">
+            <article data-about-reveal>
+              <h4>Site assessment</h4>
+              <p>We look at roof access, shade and space before we decide where the panels should go.</p>
+              <img src="./assets/images/about-solar-assessment.jpg" alt="Technician inspecting rooftop solar panels" width="768" height="512" loading="lazy">
+            </article>
+            <article data-about-reveal>
+              <h4>Installation and handover</h4>
+              <p>We mount the panels, check the system and show you how to follow its daily output.</p>
+              <img src="./assets/images/about-solar-mounting.jpg" alt="Installer securing a solar panel to its mounting rail" width="768" height="512" loading="lazy">
+            </article>
+          </div>
+        </div>
+
+        <div class="solar-about__sequence">
+          <div class="solar-about__sequence-stage solar-about__gutter">
+            <p class="solar-about__sequence-copy">From the first conversation to the first day of generation, each step has a purpose.</p>
+            <div class="solar-about__cards">
+              <img src="./assets/images/about-solar-planning.jpg" alt="Planning a solar installation" width="768" height="512" loading="lazy">
+              <img src="./assets/images/about-solar-mounting.jpg" alt="Mounting the solar panels" width="768" height="512" loading="lazy">
+              <img src="./assets/images/about-solar-home.jpg" alt="Kerala home with rooftop solar at dusk" width="768" height="512" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="solar-about__feature solar-about__gutter">
+          <h3 class="solar-about__display solar-about__offset" data-about-reveal><em>Where</em><span>solar begins</span></h3>
+          <img src="./assets/images/about-solar-cube.jpg" alt="Photovoltaic cell inside a violet glass cube" width="768" height="768" loading="lazy" data-about-reveal>
+          <p data-about-reveal>A roof, a little sunlight and a clear plan. The best starting point is knowing what your home needs.</p>
+        </div>
+
+        <div class="solar-about__faq solar-about__gutter">
+          <h3 class="solar-about__display" data-about-reveal>FAQ<em>(s)</em></h3>
+          <details>
+            <summary>What happens at a site assessment?</summary>
+            <p>We review your electricity use and check the roof for space, shade and access.</p>
+          </details>
+          <details>
+            <summary>How do I know what system size I need?</summary>
+            <p>Start with your electricity bill. We use your consumption and roof conditions to work out what size makes sense for your home.</p>
+          </details>
+          <details>
+            <summary>Can I track the power my panels generate?</summary>
+            <p>Yes. During handover, we show you where to read daily output on your system’s monitoring dashboard.</p>
+          </details>
+          <details>
+            <summary>Where can I get an estimate?</summary>
+            <p>Enter your location and monthly bill in the <a href="#upgrader-gallery">solar estimator</a> for an illustrative range.</p>
+          </details>
+        </div>
+
+        <div class="solar-about__closing solar-about__gutter">
+          <h3 class="solar-about__display solar-about__offset" data-about-reveal><em>Let’s</em> put<span>sunlight to work.</span></h3>
+          <a class="solar-about__action" href="#upgrader-gallery">Estimate your solar installation <span aria-hidden="true">↳</span></a>
+        </div>
+
+      </div>
+    </section>
 		<section class="section section-performance section-product-stories theme-dark no-pad-bottom no-pad-top-small" data-anim-scroll-group="Performance" data-theme-changer="dark" data-component-list="StaggeredFadeIn" data-ric-section>
 			<div class="subsection-mx-hero" data-component-list="ChipHero" data-analytics-section-engagement="name:performance intro">
 				<div class="sticky-container mx-sticky-container">
@@ -6185,6 +6310,6 @@ Apple Intelligence is available with Siri and device language set to Chinese (Si
 
 
 
-<script src="./js/site.js"></script>
+<script src="./js/site.js?v=light-ring"></script>
 </body>
 </html>
