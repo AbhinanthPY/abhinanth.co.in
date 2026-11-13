@@ -28,7 +28,9 @@
   mirror.setAttribute('inert', '');
   track.append(mirror);
 
-  let selected = list.querySelector('[aria-current="page"]');
+  const homeItem = list.querySelector('[aria-current="page"]');
+  const aboutItem = list.querySelector('[href="#about"]');
+  let selected = homeItem;
   let lensAnimation;
   let labelAnimation;
   const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -66,15 +68,26 @@
     })), 540);
   }
 
-  list.addEventListener('click', event => {
-    const item = event.target.closest('.solar-nav-item');
-    if (!item || item === selected) return;
+  function selectItem(item, animate) {
+    if (item === selected) return;
     if (selected.matches('button')) selected.setAttribute('aria-pressed', 'false');
+    selected.removeAttribute('aria-current');
     selected = item;
     if (selected.matches('button')) selected.setAttribute('aria-pressed', 'true');
-    moveLens(true);
+    if (selected === aboutItem || selected === homeItem) selected.setAttribute('aria-current', 'location');
+    moveLens(animate);
+  }
+
+  list.addEventListener('click', event => {
+    const item = event.target.closest('.solar-nav-item');
+    if (item) selectItem(item, true);
   });
 
+  window.addEventListener('hashchange', () => {
+    if (location.hash === '#about') selectItem(aboutItem, true);
+    if (!location.hash || location.hash === '#home') selectItem(homeItem, true);
+  });
+  if (location.hash === '#about') selectItem(aboutItem, false);
   moveLens(false);
   new ResizeObserver(() => moveLens(false)).observe(track);
 }
@@ -86,6 +99,7 @@ const video = hero.querySelector('video');
 const wordmark = hero.querySelector('.solar-wordmark');
 const cue = hero.querySelector('.solar-scroll-cue');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const loader = document.querySelector('.solar-loader[open]');
 const videoScroll = 0.88 * (220 / 320);
 const extraBrandScroll = 100 / 320;
 const brandStart = 0.63 * videoScroll;
@@ -164,10 +178,11 @@ function configureScrollVideo() {
     return;
   }
 
-  if (video.preload === 'none') {
+  if (video.preload === 'none' && !loader?.open) {
     video.preload = 'auto';
     video.load();
   }
+  if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) hero.setAttribute('data-frame-ready', '');
   syncScrollVideo();
 }
 
@@ -182,6 +197,7 @@ video.addEventListener('loadeddata', () => {
 video.addEventListener('seeked', scheduleScrollVideo);
 video.addEventListener('error', configureScrollVideo);
 reducedMotion.addEventListener?.('change', configureScrollVideo);
+loader?.addEventListener('close', configureScrollVideo, { once: true });
 
 cue.addEventListener('click', event => {
   if (!hero.hasAttribute('data-scroll-video') || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -197,6 +213,22 @@ requestAnimationFrame(() => {
     scheduleScrollVideo();
   });
 });
+
+const productViewer = document.querySelector('.section-product-viewer');
+const productIntro = productViewer.querySelector('#landing-mac-video');
+
+function prepareProductIntro() {
+  // Start while visitors are still in the hero or orbital cards.
+  for (const frame of productViewer.querySelectorAll('[data-video-id="landing-mac-video"] img[src]')) {
+    const image = new Image();
+    image.fetchPriority = 'low';
+    image.src = frame.src;
+  }
+  if (!reducedMotion.matches) productIntro.preload = 'auto';
+}
+
+if (loader) loader.addEventListener('close', prepareProductIntro, { once: true });
+else prepareProductIntro();
 
 {
   const power = document.querySelector('.solar-power');
@@ -358,9 +390,23 @@ requestAnimationFrame(() => {
   configureOrbit();
 }
 
-for (const video of document.querySelectorAll('video[data-play-once]')) {
+const prepareTour = new IntersectionObserver(([entry], observer) => {
+  if (!entry.isIntersecting) return;
+  observer.disconnect();
+  for (const video of productViewer.querySelectorAll('video[data-play-once]')) {
+    video.poster = reducedMotion.matches ? video.dataset.finalFrame : video.dataset.poster;
+  }
+  // A short head start for optional clips. The tour retains control of playback.
+  if (!reducedMotion.matches) {
+    productViewer.querySelector('#product-viewer-sizes').preload = 'metadata';
+    for (const video of productViewer.querySelectorAll('video[data-play-once]')) video.preload = 'metadata';
+  }
+}, { rootMargin: `${Math.ceil(window.innerHeight * 2)}px 0px` });
+prepareTour.observe(productViewer);
+
+for (const video of productViewer.querySelectorAll('video[data-play-once]')) {
   const button = document.getElementById(video.dataset.playOnce);
-  const startFrame = video.poster;
+  const startFrame = video.dataset.poster;
   let visible = false;
   let finished = false;
 
@@ -374,7 +420,9 @@ for (const video of document.querySelectorAll('video[data-play-once]')) {
   }
 
   function updateMotion() {
-    video.poster = reducedMotion.matches || finished ? video.dataset.finalFrame : startFrame;
+    if (video.hasAttribute('poster')) {
+      video.poster = reducedMotion.matches || finished ? video.dataset.finalFrame : startFrame;
+    }
     syncVideo();
   }
 
@@ -468,4 +516,67 @@ for (const video of document.querySelectorAll('video[data-play-once]')) {
   bill.addEventListener('blur', endDrag);
   window.addEventListener('pageshow', () => renderEstimate());
   renderEstimate();
+}
+
+// Scroll the About scenes without trapping native scrolling.
+{
+  const about = document.querySelector('.solar-about');
+  const opening = about.querySelector('.solar-about__opening');
+  const manifesto = about.querySelector('.solar-about__manifesto');
+  const sequence = about.querySelector('.solar-about__sequence');
+  const cards = sequence.querySelectorAll('.solar-about__cards img');
+  let aboutFrame = 0;
+
+  function sceneProgress(scene) {
+    const stage = scene.firstElementChild;
+    const travel = Math.max(1, scene.offsetHeight - stage.offsetHeight);
+    return clampProgress(-scene.getBoundingClientRect().top / travel);
+  }
+
+  function renderAbout() {
+    aboutFrame = 0;
+    if (reducedMotion.matches) return;
+    const bounds = about.getBoundingClientRect();
+    if (bounds.bottom < 0 || bounds.top > window.innerHeight) return;
+
+    const openingProgress = sceneProgress(opening);
+    const manifestoBounds = manifesto.getBoundingClientRect();
+    const arch = easeInOut(clampProgress(1 - manifestoBounds.top / (window.innerHeight * 0.8)));
+    const cardProgress = sceneProgress(sequence);
+    const iris = easeInOut(clampProgress((openingProgress - 0.22) / 0.72));
+
+    opening.style.setProperty('--about-window-scale', 1 + openingProgress * 0.16);
+    opening.style.setProperty('--about-iris', iris * 3);
+    manifesto.style.setProperty('--about-arch-inset', `${(1 - arch) * 24}%`);
+    manifesto.style.setProperty('--about-arch-radius', `${(1 - arch) * 34}vw`);
+    for (const [index, card] of cards.entries()) {
+      const arrival = easeInOut(clampProgress(cardProgress * 3.3 - index * 0.8));
+      const tilt = index % 2 ? 6 : -5;
+      card.style.setProperty('--about-card-y', `${(1 - arrival) * 125 + index * 2}%`);
+      card.style.setProperty('--about-card-angle', `${tilt * (1.7 - arrival * 0.7)}deg`);
+    }
+  }
+
+  function scheduleAbout() {
+    if (!aboutFrame && !reducedMotion.matches) aboutFrame = requestAnimationFrame(renderAbout);
+  }
+
+  const reveals = new IntersectionObserver((entries, observer) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.setAttribute('data-about-visible', '');
+      observer.unobserve(entry.target);
+    }
+  }, { rootMargin: '0px 0px -9% 0px' });
+
+  function updateAboutMotion() {
+    about.toggleAttribute('data-about-motion', !reducedMotion.matches);
+    scheduleAbout();
+  }
+
+  for (const element of about.querySelectorAll('[data-about-reveal]')) reveals.observe(element);
+  window.addEventListener('scroll', scheduleAbout, { passive: true });
+  window.addEventListener('resize', scheduleAbout);
+  reducedMotion.addEventListener('change', updateAboutMotion);
+  updateAboutMotion();
 }
